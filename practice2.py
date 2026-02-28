@@ -74,7 +74,7 @@ Emin = 0
 Emax = 5
 target_nodes = 2
 # insert Numerov logic
-for j in range(10):
+for j in range(12):
     Etest = 0.5* (Emin + Emax)
     nodes = 0
     if test_e(-5, 5, dx, Etest, m, w) >= target_nodes + 1:
@@ -84,11 +84,11 @@ for j in range(10):
     print(f"j {j:2d}, nodes: {nodes:2d}, Etest: {Etest:7.5g}, Emin, Emax: {Emin:7.5g}, {Emax:7.5g}")
 
 # Finally, design a function to iterate over a defined phase-space (E-space) and find stable solutions in a range.
-def numerov_iterator(start, end, precision, xstart = -5, xend = 5):
-    ranges = []
-    errors = []
-    for energy in np.arange(start, end, precision):
-        position, wave = numerov_propagator(xstart, xend, dx, energy, m, w)
+#def numerov_iterator(start, end, precision, xstart = -5, xend = 5):
+    #ranges = []
+    #errors = []
+    #for energy in np.arange(start, end, precision):
+        #position, wave = numerov_propagator(xstart, xend, dx, energy, m, w)
 
 
 
