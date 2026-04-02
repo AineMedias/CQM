@@ -22,7 +22,7 @@ r0 = (4 * np.pi * eps_0 * (hbar**2)) / (m0*(e**2)) # Bohr radius
 
 # Define variables here
 ell = 0
-a = 100 * r0
+a = 50 * r0
 n_max = 200
 
 
@@ -30,7 +30,7 @@ n_max = 200
 def E_cen(ell, r): 
     return -1 * ( ell*(ell+1) * hbar**2 ) / (2*m0*r**2)
 
-# Determine eigenvalues from a defined potential (omega(an^3), at least O(n^5))
+# Determine eigenvalues from a defined potential (omega(n^3))
 def eigenvals(V, ell, a, n_max=200):
     # Implement inf-square well energies (E = (pi^2*hbar^2*n^2) / 2*m0*a^2) => (pi*hbar*n/a)^2 / 2*m0
     E_0 = lambda n: ((np.pi * hbar * n / a) ** 2 ) / (2 * m0)
@@ -65,11 +65,11 @@ def hEnergyPlot():
 
     plt.plot(n_hatom, E_hatom, "-")
     plt.plot(range(1, n_max), E_rydberg, "o")
-    plt.xlim(0, 25)
-    plt.ylim(-1.25, 5.25)
-    plt.ylabel("energy E [27.211 eV]")
+    plt.xlim(0, 20)
+    plt.ylim(-1.25, 1.25)
+    plt.ylabel("energy [E_h]")
     plt.xlabel("n")
-    plt.title("Energy eigenvalues of hydrogen atom at a = 100r0")
+    plt.title(f"Energy eigenvalues of hydrogen atom at a = {a/r0}a0")
     plt.legend(["Program energies", "numeric results"])
     plt.show()
 
@@ -123,16 +123,21 @@ def finiteSphericalWell(singlestate=0, v0=0, b=0.15*a):
 def yukawaPotential(mode = 0, u = 0):
     A = 1 # interaction strength
     # Step three (default): determine critical coefficient of Yukawa potential
+    criticalCoefficientFound = False
     if (mode != 1):
         critical_coefficient = 0
-        for mu in tqdm(np.arange(0.90, 1.5, 0.01)):
+        mu = 0.90
+        while (mu in np.arange(0.90, 1.25, 0.01) and criticalCoefficientFound == False):
+            print(f"Now examining mu = {mu}")
             V_yukawa = lambda r: -1 * A * (np.e ** (-1 * mu * r / r0)) / r
             E_yukawa, phi_yukawa = eigenvals(V_yukawa, ell, a, 150)
             if (E_yukawa[0] > 0):
                 critical_coefficient = mu - 0.01
-                return critical_coefficient
+                print("Critical coefficient found")
+                criticalCoefficientFound = True
+            mu += 0.01
         # return 0 if code execution fails to find a critical coefficient
-        return 0
+        return critical_coefficient
     # if singlestate is on (= 1), the function will simply plot the eigenvalues of the Yukawa potential as a function of n
     else:
         V_yukawa = lambda r: -1 * A * (np.e ** (-1 * u * r / r0)) / r
@@ -146,6 +151,7 @@ def yukawaPotential(mode = 0, u = 0):
         plt.xlabel("n")
         plt.title(f"Energy eigenvalues of Yukawa potential at mu = {u}")
         plt.show()
+        print(f"The lowest-energy eigenvalue of this quantum system is {E_yukawa[0]} Hartree units")
 
 
 if __name__ == "__main__":
